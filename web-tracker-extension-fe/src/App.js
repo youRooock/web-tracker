@@ -1,10 +1,12 @@
 import React from "react";
 import "./App.css";
 import ReactMinimalPieChart from "react-minimal-pie-chart";
+import truncate from "./utils/truncate";
 
 export default class App extends React.Component {
   constructor() {
     super();
+    this.MAX_WEBSITE_LENGTH = 15;
     this.state = {
       response: []
     };
@@ -38,7 +40,7 @@ export default class App extends React.Component {
           percentage: 13.6
         },
         {
-          name: "habr.com",
+          name: "stackoverflow.com",
           count: 25,
           color: "#FF00FF",
           percentage: 6.8
@@ -57,7 +59,7 @@ export default class App extends React.Component {
             className="info bullet"
             style={{ backgroundColor: this.state.response[i].color }}
           ></div>
-          <div className="info">{this.state.response[i].name}</div>
+          <div className="info">{truncate(this.state.response[i].name, this.MAX_WEBSITE_LENGTH)}</div>
           <div className="info stats">({this.state.response[i].count})</div>
         </div>
       );
