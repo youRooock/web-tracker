@@ -34,7 +34,7 @@ body {
 }
 .info {
   display: inline-block;
-  margin-left: 20px;
+  margin-left: 7%;
   margin-top: 5px;
   width: 33%;
 }
@@ -48,7 +48,6 @@ body {
 }
 .stats {
   text-align: right;
-  margin: auto;
 }
 
 @keyframes App-logo-spin {
