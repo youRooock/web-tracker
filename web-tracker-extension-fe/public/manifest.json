@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "My Extension",
+  "description": "This extension is a starting point to create a real Chrome extension",
+  "version": "0.0.1",
+
+  "browser_action": {
+    "default_popup": "index.html",
+    "default_title": "Open the popup"
+  },
+  "icons": {
+    "16": "logo192.png",
+    "48": "logo192.png",
+    "128": "logo512.png"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_security_policy": "script-src 'self' 'sha256-nu4Ce4+yYyVoFT162LafGkde0OAEkxJgof9C8VBW53A='; object-src 'self'",
+  "permissions": ["identity","webNavigation", "*://*/*"],
+  "oauth2": {
+    "client_id": "292261455501-sccoc0gg2m9lur7vti9egr4k0f48rjp6.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/userinfo.email"]
+  }
+}
