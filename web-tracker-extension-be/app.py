@@ -1,14 +1,15 @@
 import requests
 from flask import Flask, request, jsonify
 app = Flask(__name__)
+cache = {}
 
 @app.route('/', methods=['POST'])
 def on_changed_navigation():
     try:
         headers = request.headers
-        body = request.values
+        url = request.values["url"]
         params = {
-            'url': body['url']
+            'url': url
         }
         response_body = requests.get(url = 'https://www.googleapis.com/oauth2/v3/tokeninfo', params='access_token='+headers['AUTHORIZATION']).json()
 
@@ -30,6 +31,12 @@ def on_changed_navigation():
         # If auth request is from a G Suite domain:
         # if idinfo['hd'] != GSUITE_DOMAIN_NAME:
         #     raise ValueError('Wrong hosted domain.')
+
+        if url in cache:
+            cache[url] += 1
+        else:
+            cache[url] = 1
+        return jsonify({"message": "DOne"}), 200 
 
     except ValueError as e:
         # Invalid token

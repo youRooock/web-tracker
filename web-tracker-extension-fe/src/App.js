@@ -8,59 +8,65 @@ export default class App extends React.Component {
     super();
     this.MAX_WEBSITE_LENGTH = 15;
     this.state = {
-      response: []
+      response: {
+        websites: [],
+        username: null
+      }
     };
   }
 
   componentWillMount = () => {
     this.setState({
-      response: [
-        {
-          name: "amazon.com",
-          count: 123,
-          color: "#E38627",
-          percentage: 33.4
-        },
-        {
-          name: "google.com",
-          count: 100,
-          color: "#C13C37",
-          percentage: 27.2
-        },
-        {
-          name: "rambler.ru",
-          count: 70,
-          color: "#FF1493",
-          percentage: 19
-        },
-        {
-          name: "dou.ua",
-          count: 50,
-          color: "#F4A460",
-          percentage: 13.6
-        },
-        {
-          name: "stackoverflow.com",
-          count: 25,
-          color: "#FF00FF",
-          percentage: 6.8
-        }
-      ]
+      response: {
+        websites: [
+          {
+            name: "amazon.com",
+            count: 123,
+            color: "#E38627",
+            percentage: 33.4
+          },
+          {
+            name: "google.com",
+            count: 100,
+            color: "#C13C37",
+            percentage: 27.2
+          },
+          {
+            name: "rambler.ru",
+            count: 70,
+            color: "#FF1493",
+            percentage: 19
+          },
+          {
+            name: "dou.ua",
+            count: 50,
+            color: "#F4A460",
+            percentage: 13.6
+          },
+          {
+            name: "stackoverflow.com",
+            count: 25,
+            color: "#FF00FF",
+            percentage: 6.8
+          }
+        ],
+        username: "iurii.khmelenko"
+      }
     });
-}
+  }
 
   createContent = () => {
     let blocks = [];
-    console.log(this.state.response);
-    for (let i = 0; i < this.state.response.length; i++) {
+    for (let i = 0; i < this.state.response.websites.length; i++) {
+      let website = this.state.response.websites[i];
       blocks.push(
         <div className="result-line">
           <div
             className="info bullet"
-            style={{ backgroundColor: this.state.response[i].color }}
+            style={{ backgroundColor: website.color }}
           ></div>
-          <div className="info">{truncate(this.state.response[i].name, this.MAX_WEBSITE_LENGTH)}</div>
-          <div className="info stats">({this.state.response[i].count})</div>
+          <div className="info">{truncate(website.name, this.MAX_WEBSITE_LENGTH)}</div>
+          <div className="info stats">({website.count})</div>
         </div>
       );
     }
@@ -71,11 +77,12 @@ export default class App extends React.Component {
   createChartData = () => {
     let chartData = [];
 
-    for (let i = 0; i < this.state.response.length; i++) {
+    for (let i = 0; i < this.state.response.websites.length; i++) {
+      let website = this.state.response.websites[i];
       chartData.push({
-        title: this.state.response[i].name,
-        value: this.state.response[i].percentage,
-        color: this.state.response[i].color
+        title: website.name,
+        value: website.percentage,
+        color: website.color
       });
     }
     return chartData;
@@ -84,7 +91,7 @@ export default class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <div>y.khmelenko</div>
+        <div>{this.state.response.username}</div>
         <ReactMinimalPieChart
           data={this.createChartData()}
           lineWidth={15}
