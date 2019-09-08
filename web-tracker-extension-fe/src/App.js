@@ -46,7 +46,7 @@ export default class App extends React.Component {
           percentage: 6.8
         }
       ]
-    }, () => { console.log(this.state.response)});
+    });
 }
 
   createContent = () => {
@@ -95,41 +95,4 @@ export default class App extends React.Component {
       </div>
     );
   }
-
-  // state = { email: "", count: 0 };
-  // constructor() {
-  //   super();
-  //   window.chrome.extension.sendMessage({}, response => {
-  //     if (response.email) {
-  //       this.setState({ email: response.email });
-  //     } else {
-  //       console.log("Couldn't get email address of profile user.");
-  //     }
-  //   });
-  // }
-
-  // handleClick = () => {
-  //   this.setState({ count: ++this.state.count });
-  // };
-
-  // render() {
-  //   return (
-  //     <div className="App">
-  //       <header className="App-header">
-  //         {/* <img src={logo} className="App-logo" alt="logo" /> */}
-  //         <p>{this.state.email}</p>
-  //         <p>{this.state.count}</p>
-  //         <button onClick={this.handleClick}> eat me </button>
-  //         <a
-  //           className="App-link"
-  //           href="https://reactjs.org"
-  //           target="_blank"
-  //           rel="noopener noreferrer"
-  //         >
-  //           Learn React
-  //         </a>
-  //       </header>
-  //     </div>
-  //   );
-  // }
 }

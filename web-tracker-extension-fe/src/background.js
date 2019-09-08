@@ -1,4 +1,4 @@
-import { authenticatedXhr } from "./authenticatedXhr";
+import authenticatedXhr from "./utils/authenticatedXhr";
 
 chrome.webNavigation.onCompleted.addListener((details) => {
   if (details.frameId == 0) {

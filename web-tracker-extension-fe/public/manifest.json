@@ -15,7 +15,7 @@
     "128": "logo512.png"
   },
   "background": {
-    "scripts": ["background.js"]
+    "page": "../src/background.html"
   },
   "content_security_policy": "script-src 'self' 'sha256-nu4Ce4+yYyVoFT162LafGkde0OAEkxJgof9C8VBW53A='; object-src 'self'",
   "permissions": ["identity","webNavigation", "*://*/*"],
