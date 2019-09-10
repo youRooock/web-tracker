@@ -1,0 +1,2 @@
+class NotAuthenticatedUserError(Exception):
+    pass
