@@ -8,10 +8,10 @@ export default class App extends React.Component {
   constructor() {
     super();
     this.MAX_WEBSITE_LENGTH = 15;
+    this.colors = ["#8B0000", "#FFD700", "#FFDAB9", "#228B22", "#00FFFF"];
     this.state = {
       response: {
-        websites: [],
-        username: null
+        websites: []
       }
     };
   }
@@ -32,22 +32,19 @@ export default class App extends React.Component {
       const request = store.get(today);
       request.onsuccess = () => {
         request.result.urls.sort(compare);
-        console.log(request.result.urls)
         const urls = request.result.urls.slice(0,5);
-        console.log(urls)
-        const sum = urls.reduce((x,y) => x.count + y.count, 0);
+        const sum = urls.reduce((x,y) => x + y.count, 0);
         const sites = []
 
         for (let index = 0; index < urls.length; index++) {
           const element = urls[index];
           
-          sites.push({name: element.url, count: element.count, color: "#E38627", percentage: element.count * 100 / sum});
+          sites.push({name: element.url, count: element.count, color: this.colors[index], percentage: element.count * 100 / sum});
         }
 
         this.setState({
           response: {
-            websites: sites,
-            username: "iurii.khmelenko"
+            websites: sites
           }
         });
       }
@@ -92,7 +89,6 @@ export default class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <div>{this.state.response.username}</div>
         <ReactMinimalPieChart
           data={this.createChartData()}
           lineWidth={15}
