@@ -1,11 +1,17 @@
 import authenticatedXhr from "./authenticatedXhr.js";
+import insert from "./db.js";
+
+let allWindowsClosed = false;
 
 chrome.webNavigation.onCompleted.addListener(details => {
+  if (!allWindowsClosed) allWindowsClosed = !allWindowsClosed;
   if (details.frameId == 0) {
     // handle cases with empty new tab
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
       console.log("first navigation to " + getHostName(details.url));
     });
+
+    insert(getHostName(details.url));
 
     authenticatedXhr({
       method: "POST",
@@ -36,12 +42,22 @@ chrome.tabs.onRemoved.addListener(() => {
       });
     }
   });
+
+  chrome.tabs.query({}, tabs => {
+    if (tabs.length == 0 && !allWindowsClosed) {
+      allWindowsClosed = true;
+      authenticatedXhr({
+        method: "DELETE",
+        url: "http://localhost:5000"
+      });
+    }
+  });
 });
+
 // chrome.extension.onMessage.addListener((request, sender, sendResponse) => {
 //   sendResponse({ email: email });
 // });
 
-
-const getHostName = (url) => {
- return new URL(url).hostname;
-}
+const getHostName = url => {
+  return new URL(url).hostname;
+};

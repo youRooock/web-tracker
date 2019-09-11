@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import ReactMinimalPieChart from "react-minimal-pie-chart";
 import truncate from "./utils/truncate";
+import compare from "./utils/compare";
 
 export default class App extends React.Component {
   constructor() {
@@ -16,44 +17,42 @@ export default class App extends React.Component {
   }
 
   componentWillMount = () => {
-    this.setState({
-      response: {
-        websites: [
-          {
-            name: "amazon.com",
-            count: 123,
-            color: "#E38627",
-            percentage: 33.4
-          },
-          {
-            name: "google.com",
-            count: 100,
-            color: "#C13C37",
-            percentage: 27.2
-          },
-          {
-            name: "rambler.ru",
-            count: 70,
-            color: "#FF1493",
-            percentage: 19
-          },
-          {
-            name: "dou.ua",
-            count: 50,
-            color: "#F4A460",
-            percentage: 13.6
-          },
-          {
-            name: "stackoverflow.com",
-            count: 25,
-            color: "#FF00FF",
-            percentage: 6.8
+    let db;
+    let dbReq = indexedDB.open("web-tracker-db", 1);
+
+    dbReq.onsuccess = event => {
+      db = event.target.result;
+      const tx = db.transaction(["web-links-count"], "readwrite");
+      const store = tx.objectStore("web-links-count");
+
+      const date = new Date();
+      const today =
+        date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+
+      const request = store.get(today);
+      request.onsuccess = () => {
+        request.result.urls.sort(compare);
+        console.log(request.result.urls)
+        const urls = request.result.urls.slice(0,5);
+        console.log(urls)
+        const sum = urls.reduce((x,y) => x.count + y.count, 0);
+        const sites = []
+
+        for (let index = 0; index < urls.length; index++) {
+          const element = urls[index];
+          
+          sites.push({name: element.url, count: element.count, color: "#E38627", percentage: element.count * 100 / sum});
+        }
+
+        this.setState({
+          response: {
+            websites: sites,
+            username: "iurii.khmelenko"
           }
-        ],
-        username: "iurii.khmelenko"
+        });
       }
-    });
-  }
+    };
+  };
 
   createContent = () => {
     let blocks = [];
@@ -65,7 +64,9 @@ export default class App extends React.Component {
             className="info bullet"
             style={{ backgroundColor: website.color }}
           ></div>
-          <div className="info">{truncate(website.name, this.MAX_WEBSITE_LENGTH)}</div>
+          <div className="info">
+            {truncate(website.name, this.MAX_WEBSITE_LENGTH)}
+          </div>
           <div className="info stats">({website.count})</div>
         </div>
       );
