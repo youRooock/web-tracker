@@ -1,4 +1,4 @@
-import insert from "./db.js";
+import { addOrUpdate, setElapsedTime } from "./db.js";
 
 let allWindowsClosed = false;
 
@@ -10,14 +10,14 @@ chrome.webNavigation.onCompleted.addListener(details => {
       console.log("first navigation to " + getHostName(details.url));
     });
 
-    insert(getHostName(details.url));
+    addOrUpdate(getHostName(details.url));
   }
 });
 
 chrome.tabs.onActivated.addListener(() => {
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
     if (tabs[0].url) {
-      console.log("activated " + getHostName(tabs[0].url));
+      setElapsedTime(getHostName(tabs[0].url),5);
     }
   });
 });
