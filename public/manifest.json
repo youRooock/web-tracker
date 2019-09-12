@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "My Extension",
-  "description": "This extension is a starting point to create a real Chrome extension",
+  "name": "Time Tracker",
+  "description": "Track your time spent in web broser",
   "version": "0.0.1",
 
   "browser_action": {
@@ -18,9 +18,5 @@
     "page": "./background.html"
   },
   "content_security_policy": "script-src 'self' 'sha256-nu4Ce4+yYyVoFT162LafGkde0OAEkxJgof9C8VBW53A='; object-src 'self'",
-  "permissions": ["identity","webNavigation", "*://*/*"],
-  "oauth2": {
-    "client_id": "292261455501-sccoc0gg2m9lur7vti9egr4k0f48rjp6.apps.googleusercontent.com",
-    "scopes": ["https://www.googleapis.com/auth/userinfo.email"]
-  }
+  "permissions": ["identity","webNavigation", "*://*/*"]
 }

@@ -1,4 +1,3 @@
-import authenticatedXhr from "./authenticatedXhr.js";
 import insert from "./db.js";
 
 let allWindowsClosed = false;
@@ -12,13 +11,6 @@ chrome.webNavigation.onCompleted.addListener(details => {
     });
 
     insert(getHostName(details.url));
-
-    authenticatedXhr({
-      method: "POST",
-      url: "http://localhost:5000",
-      type: "application/x-www-form-urlencoded",
-      body: "url=" + getHostName(details.url)
-    });
   }
 });
 
@@ -46,17 +38,9 @@ chrome.tabs.onRemoved.addListener(() => {
   chrome.tabs.query({}, tabs => {
     if (tabs.length == 0 && !allWindowsClosed) {
       allWindowsClosed = true;
-      authenticatedXhr({
-        method: "DELETE",
-        url: "http://localhost:5000"
-      });
     }
   });
 });
-
-// chrome.extension.onMessage.addListener((request, sender, sendResponse) => {
-//   sendResponse({ email: email });
-// });
 
 const getHostName = url => {
   return new URL(url).hostname;
