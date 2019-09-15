@@ -28,7 +28,7 @@ export const addOrUpdate = url => {
           urls: data.urls
         });
       } else {
-        data.urls.push({ url: url, count: 1 });
+        data.urls.push({ url: url, count: 1, elapsedTime: 0 });
         store.put({
           date: today,
           urls: data.urls
@@ -37,13 +37,13 @@ export const addOrUpdate = url => {
     } else {
       store.add({
         date: today,
-        urls: [{ url: url, count: 1 }]
+        urls: [{ url: url, count: 1, elapsedTime: 0 }]
       });
     }
   };
 };
 
-export const setElapsedTime = (url ,elapsedTime) => {
+export const setElapsedTime = (url, elapsedTime) => {
   const today = getTodayDate();
 
   const tx = db.transaction(["web-links-count"], "readwrite");
@@ -58,10 +58,7 @@ export const setElapsedTime = (url ,elapsedTime) => {
 
       if (searchObject) {
         searchObject.elapsedTime += elapsedTime;
-        store.put({
-          date: today,
-          elapsedTime: searchObject.elapsedTime
-        });
+        store.put(data);
       }
     }
   };
