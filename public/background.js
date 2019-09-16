@@ -1,14 +1,18 @@
-import { addOrUpdate, setElapsedTime } from "./db.js";
+import {
+  addOrUpdate,
+  setElapsedTime,
+  getPreviousActiveTab,
+  setActiveTab
+} from "./db.js";
 
+var date = Date.now();
 let allWindowsClosed = false;
 
 chrome.webNavigation.onCompleted.addListener(details => {
   if (!allWindowsClosed) allWindowsClosed = !allWindowsClosed;
   if (details.frameId == 0) {
     // handle cases with empty new tab
-    chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
-      console.log("first navigation to " + getHostName(details.url));
-    });
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {});
 
     addOrUpdate(getHostName(details.url));
   }
@@ -17,7 +21,12 @@ chrome.webNavigation.onCompleted.addListener(details => {
 chrome.tabs.onActivated.addListener(() => {
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
     if (tabs[0].url) {
-      setElapsedTime(getHostName(tabs[0].url),5);
+      var timeInSeconds = (Date.now() - date) / 1000;
+      getPreviousActiveTab().then(prevTab => {
+        setElapsedTime(prevTab.url, timeInSeconds);
+        setActiveTab(getHostName(tabs[0].url));
+        date = Date.now();
+      });
     }
   });
 });
@@ -29,7 +38,11 @@ chrome.tabs.onRemoved.addListener(() => {
     if (tabs.length == 0) {
       chrome.tabs.query({ active: true, lastFocusedWindow: false }, tabs => {
         if (tabs.length != 0 && tabs[tabs.length - 1].url) {
-          console.log("activated " + getHostName(tabs[0].url));
+          var timeInSeconds = (Date.now() - date) / 1000;
+          const prevTab = getPreviousActiveTab();
+          setElapsedTime(prevTab.url, timeInSeconds);
+          setActiveTab(getHostName(tabs[0].url));
+          date = Date.now();
         }
       });
     }
