@@ -1,38 +1,32 @@
-import {
-  addOrUpdate,
-  setElapsedTime,
-  getPreviousActiveTab,
-  setActiveTab
-} from "./db.js";
+import { updateVisitCountForUrl, setActiveUrl, trackElapsedTime } from "./userActivity.js";
 
 var date = Date.now();
 let allWindowsClosed = false;
 
-chrome.webNavigation.onCompleted.addListener(details => {
-  if (!allWindowsClosed) allWindowsClosed = !allWindowsClosed;
+chrome.webNavigation.onCompleted.addListener(async (details) => {
+  if (allWindowsClosed) {
+    date = Date.now();
+    allWindowsClosed = !allWindowsClosed;
+  }
   if (details.frameId == 0) {
     // handle cases with empty new tab
-    chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {});
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => { });
 
     var timeInSeconds = (Date.now() - date) / 1000;
-    getPreviousActiveTab().then(prevTab => {
-      setElapsedTime(prevTab.url, timeInSeconds);
-      setActiveTab(getHostName(details.url));
-      date = Date.now();
-    });
-    addOrUpdate(getHostName(details.url));
+
+    await trackElapsedTime(Math.round(timeInSeconds));
+    date = Date.now();
+    await updateVisitCountForUrl(getHostName(details.url));
   }
 });
 
 chrome.tabs.onActivated.addListener(() => {
-  chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
+  chrome.tabs.query({ active: true, lastFocusedWindow: true }, async (tabs) => {
     if (tabs[0].url) {
-      var timeInSeconds = (Date.now() - date) / 1000;
-      getPreviousActiveTab().then(prevTab => {
-        setElapsedTime(prevTab.url, timeInSeconds);
-        setActiveTab(getHostName(tabs[0].url));
-        date = Date.now();
-      });
+      const timeInSeconds = (Date.now() - date) / 1000;
+      await trackElapsedTime(Math.round(timeInSeconds));
+      await setActiveUrl(getHostName(tabs[0].url));
+      date = Date.now();
     }
   });
 });
@@ -42,21 +36,24 @@ chrome.tabs.onActivated.addListener(() => {
 chrome.tabs.onRemoved.addListener(() => {
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {
     if (tabs.length == 0) {
-      chrome.tabs.query({ active: true, lastFocusedWindow: false }, tabs => {
+      chrome.tabs.query({ active: true, lastFocusedWindow: false }, async (tabs) => {
         if (tabs.length != 0 && tabs[tabs.length - 1].url) {
-          var timeInSeconds = (Date.now() - date) / 1000;
-          const prevTab = getPreviousActiveTab();
-          setElapsedTime(prevTab.url, timeInSeconds);
-          setActiveTab(getHostName(tabs[0].url));
+          const timeInSeconds = (Date.now() - date) / 1000;
+          await trackElapsedTime(Math.round(timeInSeconds));
+          await setActiveUrl(getHostName(tabs[0].url));
           date = Date.now();
         }
       });
     }
   });
 
-  chrome.tabs.query({}, tabs => {
+  // handle all windows close
+  chrome.tabs.query({}, async (tabs) => {
     if (tabs.length == 0 && !allWindowsClosed) {
       allWindowsClosed = true;
+      const timeInSeconds = (Date.now() - date) / 1000;
+      await trackElapsedTime(Math.round(timeInSeconds));
+      await setActiveUrl(null);
     }
   });
 });
