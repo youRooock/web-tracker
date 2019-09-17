@@ -18,8 +18,7 @@ export const setActiveUrl = async (url) => {
     const entity = await get(today);
 
     if (entity) {
-        const prev = entity.urls.find(x => x.isActive);
-        prev.isActive = false;
+        resetActiveUrls(entity.urls);
 
         const curr = entity.urls.find(x => x.url == url);
         if (curr) {
@@ -31,15 +30,22 @@ export const setActiveUrl = async (url) => {
     }
 }
 
+export const deactivateActiveUrl = async () => {
+    const today = getTodayDate();
+    const entity = await get(today);
+
+    if (entity) {
+        resetActiveUrls(entity.urls);
+        await update(entity);
+    }
+}
+
 export const updateVisitCountForUrl = async (url) => {
     const today = getTodayDate();
 
     const entity = await get(today);
     if (entity) {
-        const prev = entity.urls.find(x => x.isActive);
-        if(prev) {
-            prev.isActive = false;
-        }
+        resetActiveUrls(entity.urls);
         const curr = entity.urls.find(x => x.url == url);
 
         if (curr) {
@@ -63,4 +69,11 @@ const getTodayDate = () => {
     return (
         date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
     );
+}
+
+const resetActiveUrls = (urls) =>{
+    const allActive = urls.filter(x => x.isActive);
+    allActive.forEach(r => {
+        r.isActive = false;
+    });
 }

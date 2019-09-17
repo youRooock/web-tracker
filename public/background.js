@@ -1,4 +1,4 @@
-import { updateVisitCountForUrl, setActiveUrl, trackElapsedTime } from "./userActivity.js";
+import { updateVisitCountForUrl, setActiveUrl, trackElapsedTime, deactivateActiveUrl } from "./userActivity.js";
 
 var date = Date.now();
 let allWindowsClosed = false;
@@ -53,7 +53,7 @@ chrome.tabs.onRemoved.addListener(() => {
       allWindowsClosed = true;
       const timeInSeconds = (Date.now() - date) / 1000;
       await trackElapsedTime(Math.round(timeInSeconds));
-      await setActiveUrl(null);
+      await deactivateActiveUrl();
     }
   });
 });
