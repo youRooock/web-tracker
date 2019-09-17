@@ -14,6 +14,12 @@ chrome.webNavigation.onCompleted.addListener(details => {
     // handle cases with empty new tab
     chrome.tabs.query({ active: true, lastFocusedWindow: true }, tabs => {});
 
+    var timeInSeconds = (Date.now() - date) / 1000;
+    getPreviousActiveTab().then(prevTab => {
+      setElapsedTime(prevTab.url, timeInSeconds);
+      setActiveTab(getHostName(details.url));
+      date = Date.now();
+    });
     addOrUpdate(getHostName(details.url));
   }
 });

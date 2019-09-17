@@ -1,5 +1,6 @@
 let db;
 let dbReq = indexedDB.open("web-tracker-db", 1);
+const linksStore = "web-links";
 dbReq.onupgradeneeded = event => {
   db = event.target.result;
   db.createObjectStore("web-links-count", { keyPath: "date" });
@@ -10,13 +11,10 @@ dbReq.onsuccess = event => {
 
 export const addOrUpdate = url => {
   const today = getTodayDate();
+  const request = getRecordRequest(today);
 
-  const tx = db.transaction(["web-links-count"], "readwrite");
-  const store = tx.objectStore("web-links-count");
-  const getRequest = store.get(today);
-
-  getRequest.onsuccess = () => {
-    const data = getRequest.result;
+  request.onsuccess = () => {
+    const data = request.result;
 
     if (data) {
       var searchObject = data.urls.find(x => x.isActive);
@@ -48,13 +46,10 @@ export const addOrUpdate = url => {
 
 export const setElapsedTime = (url, elapsedTime) => {
   const today = getTodayDate();
+  const request = getRecordRequest(today);
 
-  const tx = db.transaction(["web-links-count"], "readwrite");
-  const store = tx.objectStore("web-links-count");
-  const getRequest = store.get(today);
-
-  getRequest.onsuccess = () => {
-    const data = getRequest.result;
+  request.onsuccess = () => {
+    const data = request.result;
 
     if (data) {
       var searchObject = data.urls.find(x => x.url == url);
@@ -70,13 +65,10 @@ export const setElapsedTime = (url, elapsedTime) => {
 export const getPreviousActiveTab = () => {
   return new Promise(resolve => {
     const today = getTodayDate();
+    const request = getRecordRequest(today);
 
-    const tx = db.transaction(["web-links-count"], "readwrite");
-    const store = tx.objectStore("web-links-count");
-    const getRequest = store.get(today);
-
-    getRequest.onsuccess = () => {
-      const data = getRequest.result;
+    request.onsuccess = () => {
+      const data = request.result;
 
       if (data) {
         var searchObject = data.urls.find(x => x.isActive);
@@ -89,24 +81,65 @@ export const getPreviousActiveTab = () => {
 
 export const setActiveTab = url => {
   const today = getTodayDate();
-
-  const tx = db.transaction(["web-links-count"], "readwrite");
-  const store = tx.objectStore("web-links-count");
-  const getRequest = store.get(today);
-
-  getRequest.onsuccess = () => {
-    const data = getRequest.result;
+  const request = getRecordRequest(today);
+  request.onsuccess = () => {
+    const data = request.result;
 
     if (data) {
       var searchObject = data.urls.find(x => x.isActive);
       searchObject.isActive = false;
 
       searchObject = data.urls.find(x => x.url == url);
-      searchObject.isActive = true;
+      if (!searchObject) {
+        searchObject.isActive = true;
+      }
 
       store.put(data);
     }
   };
+};
+
+export const update = entity => {
+  return new Promise(resolve => {
+    const request = getStore().put(entity);
+    handleRequestEvents(request, resolve);
+  });
+};
+
+export const get = key => {
+  return new Promise(resolve => {
+    const request = getStore().get(key);
+    handleRequestEvents(request, resolve);
+  });
+};
+
+export const create = entity => {
+  return new Promise(resolve => {
+    const request = getStore().add(entity);
+    handleRequestEvents(request, resolve);
+  });
+};
+
+export const remove = key => {
+  return new Promise(resolve => {
+    const request = getStore().delete(key);
+    handleRequestEvents(request, resolve);
+  });
+};
+
+const handleRequestEvents = (request, callback) => {
+  request.onsuccess = () => {
+    return callback(request.result);
+  };
+
+  request.onerror = (e) => {
+    console.log(e);
+  };
+}
+
+const getStore = name => {
+  const tx = db.transaction([name], "readwrite");
+  return tx.objectStore(name);
 };
 
 const getTodayDate = () => {
