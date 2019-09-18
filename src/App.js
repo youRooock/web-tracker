@@ -32,59 +32,55 @@ export default class App extends React.Component {
 
       const request = store.get(today);
       request.onsuccess = () => {
-        request.result.urls.sort(compare);
-        const urls = request.result.urls.slice(0,5);
-        const sum = urls.reduce((x,y) => x + y.elapsedTime, 0);
-        const sites = []
-
-        for (let index = 0; index < urls.length; index++) {
-          const element = urls[index];
-          
-          sites.push({name: element.url, elapsedTime: element.elapsedTime, color: this.colors[index], percentage: element.elapsedTime * 100 / sum});
-        }
+        const urls = request.result.urls
+          .sort((a, b) => b.elapsedTime - a.elapsedTime)
+          .slice(0, 5);
+        const sum = urls.reduce((x, y) => x + y.elapsedTime, 0);
+        const sites = urls.map((element, i) => {
+          return {
+            name: element.url,
+            elapsedTime: element.elapsedTime,
+            color: this.colors[i],
+            percentage: (element.elapsedTime * 100) / sum
+          }
+        });
 
         this.setState({
           response: {
             websites: sites
           }
         });
-      }
+      };
     };
   };
 
   createContent = () => {
-    let blocks = [];
-    for (let i = 0; i < this.state.response.websites.length; i++) {
-      let website = this.state.response.websites[i];
-      blocks.push(
+    return this.state.response.websites.map(site => {
+      return (
         <div className="result-line">
           <div
             className="info bullet"
-            style={{ backgroundColor: website.color }}
+            style={{ backgroundColor: site.color }}
           ></div>
           <div className="info">
-            {truncate(website.name, this.MAX_WEBSITE_LENGTH)}
+            {truncate(site.name, this.MAX_WEBSITE_LENGTH)}
           </div>
-          <div className="info stats">({Math.round(website.elapsedTime / 60)})</div>
+          <div className="info stats">
+            ({Math.round(site.elapsedTime / 60)})
+          </div>
         </div>
       );
-    }
-
-    return blocks;
+    });
   };
 
   createChartData = () => {
-    let chartData = [];
-
-    for (let i = 0; i < this.state.response.websites.length; i++) {
-      let website = this.state.response.websites[i];
-      chartData.push({
-        title: website.name,
-        value: website.percentage,
-        color: website.color
-      });
-    }
-    return chartData;
+    return this.state.response.websites.map(site => {
+      return {
+        title: site.name,
+        value: site.percentage,
+        color: site.color
+      };
+    });
   };
 
   render() {
