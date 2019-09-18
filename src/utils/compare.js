@@ -1,8 +1,8 @@
 const compare = (a, b) => {
-  if (a.count > b.count) {
+  if (a.elapsedTime > b.elapsedTime) {
     return -1;
   }
-  if (a.count < b.count) {
+  if (a.elapsedTime < b.elapsedTime) {
     return 1;
   }
   return 0;

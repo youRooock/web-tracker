@@ -7,6 +7,7 @@ import compare from "./utils/compare";
 export default class App extends React.Component {
   constructor() {
     super();
+    this.linksStore = "web-links";
     this.MAX_WEBSITE_LENGTH = 15;
     this.colors = ["#8B0000", "#FFD700", "#FFDAB9", "#228B22", "#00FFFF"];
     this.state = {
@@ -22,8 +23,8 @@ export default class App extends React.Component {
 
     dbReq.onsuccess = event => {
       db = event.target.result;
-      const tx = db.transaction(["web-links-count"], "readwrite");
-      const store = tx.objectStore("web-links-count");
+      const tx = db.transaction([this.linksStore], "readwrite");
+      const store = tx.objectStore(this.linksStore);
 
       const date = new Date();
       const today =
@@ -33,13 +34,13 @@ export default class App extends React.Component {
       request.onsuccess = () => {
         request.result.urls.sort(compare);
         const urls = request.result.urls.slice(0,5);
-        const sum = urls.reduce((x,y) => x + y.count, 0);
+        const sum = urls.reduce((x,y) => x + y.elapsedTime, 0);
         const sites = []
 
         for (let index = 0; index < urls.length; index++) {
           const element = urls[index];
           
-          sites.push({name: element.url, count: element.count, color: this.colors[index], percentage: element.count * 100 / sum});
+          sites.push({name: element.url, elapsedTime: element.elapsedTime, color: this.colors[index], percentage: element.elapsedTime * 100 / sum});
         }
 
         this.setState({
@@ -64,7 +65,7 @@ export default class App extends React.Component {
           <div className="info">
             {truncate(website.name, this.MAX_WEBSITE_LENGTH)}
           </div>
-          <div className="info stats">({website.count})</div>
+          <div className="info stats">({Math.round(website.elapsedTime / 60)})</div>
         </div>
       );
     }
