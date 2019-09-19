@@ -2,29 +2,27 @@ import React from "react";
 import "./App.css";
 import ReactMinimalPieChart from "react-minimal-pie-chart";
 import truncate from "./utils/truncate";
-import compare from "./utils/compare";
+
+const STORE_NAME = "web-links";
+const DB_NAME = "web-tracker-db";
+const MAX_WEBSITE_LENGTH = 15;
+const COLORS = ["#8B0000", "#FFD700", "#FFDAB9", "#228B22", "#00FFFF"];
 
 export default class App extends React.Component {
-  constructor() {
-    super();
-    this.linksStore = "web-links";
-    this.MAX_WEBSITE_LENGTH = 15;
-    this.colors = ["#8B0000", "#FFD700", "#FFDAB9", "#228B22", "#00FFFF"];
-    this.state = {
-      response: {
-        websites: []
-      }
-    };
-  }
+  state = {
+    response: {
+      websites: []
+    }
+  };
 
   componentWillMount = () => {
     let db;
-    let dbReq = indexedDB.open("web-tracker-db", 1);
+    let dbReq = indexedDB.open(DB_NAME, 1);
 
     dbReq.onsuccess = event => {
       db = event.target.result;
-      const tx = db.transaction([this.linksStore], "readwrite");
-      const store = tx.objectStore(this.linksStore);
+      const tx = db.transaction([STORE_NAME], "readwrite");
+      const store = tx.objectStore(STORE_NAME);
 
       const date = new Date();
       const today =
@@ -40,7 +38,7 @@ export default class App extends React.Component {
           return {
             name: element.url,
             elapsedTime: element.elapsedTime,
-            color: this.colors[i],
+            color: COLORS[i],
             percentage: (element.elapsedTime * 100) / sum
           }
         });
@@ -63,7 +61,7 @@ export default class App extends React.Component {
             style={{ backgroundColor: site.color }}
           ></div>
           <div className="info">
-            {truncate(site.name, this.MAX_WEBSITE_LENGTH)}
+            {truncate(site.name, MAX_WEBSITE_LENGTH)}
           </div>
           <div className="info stats">
             ({Math.round(site.elapsedTime / 60)})
