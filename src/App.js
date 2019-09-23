@@ -40,7 +40,7 @@ export default class App extends React.Component {
             elapsedTime: element.elapsedTime,
             color: COLORS[i],
             percentage: (element.elapsedTime * 100) / sum
-          }
+          };
         });
 
         this.setState({
@@ -60,9 +60,7 @@ export default class App extends React.Component {
             className="info bullet"
             style={{ backgroundColor: site.color }}
           ></div>
-          <div className="info">
-            {truncate(site.name, MAX_WEBSITE_LENGTH)}
-          </div>
+          <div className="info">{truncate(site.name, MAX_WEBSITE_LENGTH)}</div>
           <div className="info stats">
             ({Math.round(site.elapsedTime / 60)})
           </div>
@@ -72,13 +70,11 @@ export default class App extends React.Component {
   };
 
   createChartData = () => {
-    return this.state.response.websites.map(site => {
-      return {
-        title: site.name,
-        value: site.percentage,
-        color: site.color
-      };
-    });
+    return this.state.response.websites.map(site => ({
+      title: site.name,
+      value: site.percentage,
+      color: site.color
+    }));
   };
 
   render() {
