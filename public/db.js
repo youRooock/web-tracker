@@ -1,6 +1,5 @@
-const DB_NAME = "web-tracker-db";
 const STORE_NAME = "web-links";
-
+const DB_NAME = "web-tracker-db";
 let db;
 let dbReq = indexedDB.open(DB_NAME, 1);
 

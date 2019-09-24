@@ -1,10 +1,10 @@
 import React from "react";
 import "./App.css";
 import ReactMinimalPieChart from "react-minimal-pie-chart";
-import { truncate } from "./utils/truncate";
+import truncate from "./utils/truncate";
 
-const DB_NAME = "web-tracker-db";
 const STORE_NAME = "web-links";
+const DB_NAME = "web-tracker-db";
 const MAX_WEBSITE_LENGTH = 15;
 const COLORS = ["#8B0000", "#FFD700", "#FFDAB9", "#228B22", "#00FFFF"];
 
@@ -40,7 +40,7 @@ export default class App extends React.Component {
             elapsedTime: element.elapsedTime,
             color: COLORS[i],
             percentage: (element.elapsedTime * 100) / sum
-          }
+          };
         });
 
         this.setState({
@@ -60,9 +60,7 @@ export default class App extends React.Component {
             className="info bullet"
             style={{ backgroundColor: site.color }}
           ></div>
-          <div className="info">
-            {truncate(site.name, MAX_WEBSITE_LENGTH)}
-          </div>
+          <div className="info">{truncate(site.name, MAX_WEBSITE_LENGTH)}</div>
           <div className="info stats">
             ({Math.round(site.elapsedTime / 60)})
           </div>
@@ -72,13 +70,11 @@ export default class App extends React.Component {
   };
 
   createChartData = () => {
-    return this.state.response.websites.map(site => {
-      return {
-        title: site.name,
-        value: site.percentage,
-        color: site.color
-      };
-    });
+    return this.state.response.websites.map(site => ({
+      title: site.name,
+      value: site.percentage,
+      color: site.color
+    }));
   };
 
   render() {

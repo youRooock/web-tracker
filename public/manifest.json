@@ -7,12 +7,12 @@
 
   "browser_action": {
     "default_popup": "index.html",
-    "default_title": "Open the popup"
+    "default_title": "Time Tracker"
   },
   "icons": {
-    "16": "logo192.png",
-    "48": "logo192.png",
-    "128": "logo512.png"
+    "16": "logo48.png",
+    "48": "logo48.png",
+    "128": "logo128.png"
   },
   "background": {
     "page": "./background.html"
